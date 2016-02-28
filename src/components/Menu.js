@@ -10,7 +10,6 @@ class Menu extends React.Component {
 
   render () {
     const { handle, loggedIn } = this.props.user
-    console.log(this.prop)
     let loginButton
 
     if (loggedIn) {

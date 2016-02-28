@@ -1,7 +1,7 @@
 import React from 'react'
 
 const AboutView = () => (
-  <div>
+  <div className='container'>
     <h1>About</h1>
     <p>A rails / react file uploader</p>
   </div>

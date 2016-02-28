@@ -8,6 +8,7 @@ import { fetchUser } from '../../redux/modules/user'
 import Document from 'components/Document'
 import NewDocument from 'components/NewDocument'
 import Uri from 'jsuri'
+import { Link } from 'react-router'
 
 // todo: look at this more
 // https://github.com/reactjs/react-router/blob/master/examples/auth-flow/app.js
@@ -37,18 +38,20 @@ export class HomeView extends React.Component {
   }
 
   render () {
-    const { counter, documents } = this.props
+    const { documents } = this.props
     return (
-      <div>
-        <div className='container'>
-          <NewDocument />
-          <ul>
-            {documents.items.map((doc) =>
-              <Document key={doc.id} doc={doc} />
-            )}
-          </ul>
-        </div>
-        <hr></hr>
+      <div className='container'>
+        <h3>Upload a new document:</h3>
+        <NewDocument />
+        <hr />
+        <ul className='list-group'>
+          {documents.items.map((doc) =>
+            <li key={doc.id} className='list-group-item'>
+              <Link to={`/document/${doc.id}`}>View in app</Link>
+              <Document doc={doc} />
+            </li>
+          )}
+        </ul>
       </div>
     )
   }

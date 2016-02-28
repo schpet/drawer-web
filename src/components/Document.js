@@ -1,40 +1,59 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import bytes from 'bytes'
+
+const maxImagePreviewFileSize = bytes('2MB')
 
 class Document extends React.Component {
+
   render () {
-    const { id } = this.props.doc
-    const { filename, mime_type, file_size, url } = this.props.doc.attributes
+    const { attributes } = this.props.doc
+    const { file_size, url, filename } = attributes
 
+    const formattedFileSize = bytes(file_size)
 
-    switch(mime_type) {
+    return (
+      <div className='clearfix'>
+        <a href={url} className='btn btn-primary pull-right'>
+        View Raw
+        </a>
+        <div>
+          {filename} ({formattedFileSize})
+        </div>
+        {this.renderPreview()}
+      </div>
+    )
+  }
+
+  renderPreview = () => {
+    const { filename, mime_type, url, file_size } = this.props.doc.attributes
+
+    switch (mime_type) {
       case 'image/jpeg':
       case 'image/png':
       case 'image/gif':
       case 'image/svg+xml':
+
+        if (file_size > maxImagePreviewFileSize) {
+          return (
+            <div>
+              no preview for images larger than {bytes(maxImagePreviewFileSize)}
+            </div>
+          )
+        }
         return (
-          <div>
-            <a href={url}>
-              <img src={url} title={filename} width="200" />
-            </a>
-          </div>
+          <img src={url} title={filename} width='200' />
         )
       case 'video/quicktime':
         return (
-          <div>
-            <div>
-              <a href={url}>{filename}</a>
-            </div>
-            <video width='400' height='300' preload controls>
-              <source src={url} />
-            </video>
-          </div>
+          <video width='400' height='300' preload controls>
+            <source src={url} />
+          </video>
         )
       default:
         return (
           <div>
-            <a href={url}>{filename}</a>
-            ({mime_type})
+            (no preview for {mime_type})
           </div>
         )
     }

@@ -9,12 +9,14 @@ import { Route, IndexRoute } from 'react-router'
 import CoreLayout from 'layouts/CoreLayout/CoreLayout'
 import HomeView from 'views/HomeView/HomeView'
 import AboutView from 'views/AboutView/AboutView'
+import DocumentView from 'views/DocumentView/DocumentView'
 
 export default (store) => {
   return (
     <Route path='/' component={CoreLayout}>
       <IndexRoute component={HomeView} />
       <Route path='about' component={AboutView} />
+      <Route path='document/:documentId' component={DocumentView} />
     </Route>
   )
 }
