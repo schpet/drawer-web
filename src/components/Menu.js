@@ -15,7 +15,11 @@ class Menu extends React.Component {
     if (loggedIn) {
       loginButton = <a href='javascript:alert("todo")'>Logout</a>
     } else {
-      loginButton = <a href='http://localhost:3000/request_token'>Login</a>
+      loginButton = (
+        <a href='http://localhost:3000/request_token'>
+          Sign in with Github
+        </a>
+      )
     }
 
     return (

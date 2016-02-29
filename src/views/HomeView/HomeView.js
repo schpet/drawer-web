@@ -64,7 +64,7 @@ export class HomeView extends React.Component {
         <div>
           <h1>Drawer</h1>
           {!user.loggedIn && (
-            <div>Authenticate with github to upload documents</div>
+            <div>A place to upload your files</div>
           )}
         </div>
 
