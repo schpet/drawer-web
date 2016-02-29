@@ -1,25 +1,40 @@
-import { camelizeKeys } from 'humps'
+// references:
+// - https://github.com/reactjs/redux/blob/v3.3.1/examples/real-world/middleware/api.js
+
+import { camelizeKeys, decamelizeKeys } from 'humps'
 import 'isomorphic-fetch'
 
 const API_ROOT = `${DRAWER_API_URL}/api/`
 
-const authHeaders = () => {
+const DEFAULT_HEADERS = {
+  'Accept': 'application/json',
+  'Content-Type': 'application/json'
+}
+
+// TODO: move authentication into state.
+const headers = () => {
   const jwtToken = localStorage.getItem('jwt')
   if (jwtToken) {
-    return {
-      headers: { 'Authorization': localStorage.getItem('jwt') }
-    }
+    return Object.assign({}, DEFAULT_HEADERS, {
+      'Authorization': localStorage.getItem('jwt')
+    })
   } else {
-    return { headers: {} }
+    return DEFAULT_HEADERS
   }
 }
 
-function callApi (endpoint) {
-  console.log("callApi")
+function callApi (endpoint, method = 'GET', data = null) {
   const fullUrl = API_ROOT + endpoint
 
-  // TODO auth!
-  return fetch(fullUrl, authHeaders())
+  let options = {
+    headers: headers(),
+    method
+  }
+  if (data !== null) {
+    options.body = JSON.stringify(decamelizeKeys(data))
+  }
+
+  return fetch(fullUrl, options)
     .then((response) =>
       response.json().then((json) => ({ json, response }))
     ).then(({ json, response }) => {
@@ -44,14 +59,14 @@ export const CALL_API = Symbol('Call API')
 
 // A Redux middleware that interprets actions with CALL_API info specified.
 // Performs the call and promises when such actions are dispatched.
-export default store => next => action => {
+export default (store) => (next) => (action) => {
   const callAPI = action[CALL_API]
   if (typeof callAPI === 'undefined') {
     return next(action)
   }
 
   let { endpoint } = callAPI
-  const { types } = callAPI
+  const { types, method, data } = callAPI
 
   if (typeof endpoint === 'function') {
     endpoint = endpoint(store.getState())
@@ -76,7 +91,7 @@ export default store => next => action => {
   const [ requestType, successType, failureType ] = types
   next(actionWith({ type: requestType }))
 
-  return callApi(endpoint).then(
+  return callApi(endpoint, method, data).then(
     (response) => next(actionWith({
       response,
       type: successType

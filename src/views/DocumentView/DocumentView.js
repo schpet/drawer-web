@@ -1,16 +1,18 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { fetchDocument } from '../../redux/modules/documents'
+import { loadDocument } from '../../redux/modules/documents'
 import Document from 'components/Document'
 
 function loadData (props) {
   const { documentId } = props
-  props.fetchDocument(documentId)
+  props.loadDocument(documentId)
 }
 
 class DocumentView extends React.Component {
   static propTypes = {
-    document: PropTypes.object
+    document: PropTypes.object,
+    params: PropTypes.object.isRequired,
+    isFetchingDocument: PropTypes.bool.isRequired
   }
 
   componentWillMount () {
@@ -18,8 +20,16 @@ class DocumentView extends React.Component {
   }
 
   render () {
-    // const { document } = this.props
-    const { document } = this.props
+    const { document, isFetchingDocument } = this.props
+    const { documentId } = this.props.params
+
+    if (isFetchingDocument) {
+      return (
+        <div className='container'>
+          Fetching document {documentId}...
+        </div>
+      )
+    }
 
     if (document) {
       return (
@@ -28,9 +38,10 @@ class DocumentView extends React.Component {
         </div>
       )
     }
+
     return (
       <div>
-        loading document...
+        there is no document :-(
       </div>
     )
   }
@@ -38,14 +49,15 @@ class DocumentView extends React.Component {
 
 function mapStateToProps (state, ownProps) {
   const { documentId } = ownProps.params
-  const { items } = state.documents
+  const { items, isFetchingDocument } = state.documents
 
   return {
     documentId,
-    document: items.filter((doc) => doc.id === documentId)[0]
+    document: items.filter((doc) => doc.id === documentId)[0],
+    isFetchingDocument
   }
 }
 
 export default connect(mapStateToProps, {
-  fetchDocument
+  loadDocument
 })(DocumentView)

@@ -1,134 +1,82 @@
-import fetch from 'isomorphic-fetch'
+import 'isomorphic-fetch'
 import { CALL_API } from 'middleware/api'
 
-export const REQUEST_DOCUMENTS = 'REQUEST_DOCUMENTS'
-export const RECEIVE_DOCUMENTS = 'RECEIVE_DOCUMENTS'
+export const DOCUMENTS_REQUEST = 'DOCUMENTS_REQUEST'
+export const DOCUMENTS_SUCCESS = 'DOCUMENTS_SUCCESS'
 export const DOCUMENTS_FAILURE = 'DOCUMENTS_FAILURE'
-export const REQUEST_DOCUMENT = 'REQUEST_DOCUMENT'
-export const RECEIVE_DOCUMENT = 'RECEIVE_DOCUMENT'
-export const REQUEST_CREATE_DOCUMENT = 'REQUEST_CREATE_DOCUMENT'
+
+export const DOCUMENT_REQUEST = 'DOCUMENT_REQUEST'
+export const DOCUMENT_SUCCESS = 'DOCUMENT_SUCCESS'
+export const DOCUMENT_FAILURE = 'DOCUMENT_FAILURE'
+
+export const CREATE_DOCUMENT_REQUEST = 'CREATE_DOCUMENT_REQUEST'
 export const CREATE_DOCUMENT_SUCCESS = 'CREATE_DOCUMENT_SUCCESS'
+export const CREATE_DOCUMENT_FAILURE = 'CREATE_DOCUMENT_FAILURE'
 
-export const requestDocuments = () => ({
-  type: REQUEST_DOCUMENTS
-})
+// unused:
+// export const actions = {
+//   loadDocuments,
+//   createDocument
+// }
 
-export const requestDocument = () => ({
-  type: REQUEST_DOCUMENT
-})
-
-export const receiveDocuments = (json) => ({
-  type: RECEIVE_DOCUMENTS,
-  documents: json,
-  receivedAt: Date.now()
-})
-
-export const receiveDocument = (json) => ({
-  type: RECEIVE_DOCUMENT,
-  document: json,
-  receivedAt: Date.now()
-})
-
-export const requestCreateDocument = (filename, s3Key, mimeType, fileSize) => ({
-  type: REQUEST_CREATE_DOCUMENT,
-  filename,
-  s3Key,
-  mimeType,
-  fileSize
-})
-
-export const createDocumentSuccess = (json) => ({
-  type: CREATE_DOCUMENT_SUCCESS,
-  document: json
-})
-
-// TODO is this right? is this used?
-export const actions = {
-  loadDocuments,
-  createDocument
-}
-
-function checkStatus (response) {
-  if (response.status >= 200 && response.status < 300) {
-    return response
-  } else {
-    var error = new Error(response.statusText)
-    error.response = response
-    throw error
-  }
-}
-
-const authHeaders = () => {
-  const jwtToken = localStorage.getItem('jwt')
-  if (jwtToken) {
-    return {
-      headers: { 'Authorization': localStorage.getItem('jwt') }
-    }
-  } else {
-    return { headers: {} }
-  }
-}
-
-export const fetchDocumentsOld = () => {
-  return (dispatch) => {
-    dispatch(requestDocuments())
-    return fetch(`${DRAWER_API_URL}/api/documents`, authHeaders())
-    .then(checkStatus)
-    .then((response) => response.json())
-    .then((json) => dispatch(receiveDocuments(json.data)))
-  }
-}
-
-export const fetchDocuments = () => {
+const fetchDocuments = () => {
   return {
     [CALL_API]: {
-      types: [ REQUEST_DOCUMENTS, RECEIVE_DOCUMENTS, DOCUMENTS_FAILURE ],
+      types: [ DOCUMENTS_REQUEST, DOCUMENTS_SUCCESS, DOCUMENTS_FAILURE ],
       endpoint: 'documents'
+    }
+  }
+}
+
+const fetchDocument = (documentId) => {
+  return {
+    [CALL_API]: {
+      types: [ DOCUMENT_REQUEST, DOCUMENT_SUCCESS, DOCUMENT_FAILURE ],
+      endpoint: `documents/${documentId}`
     }
   }
 }
 
 export const loadDocuments = () => {
   return (dispatch) => {
+    // TODO maybe don't always get all the documents?
     dispatch(fetchDocuments())
   }
 }
 
-export const fetchDocument = (documentId) => {
-  // TODO check if it's already loaded?
-  return (dispatch) => {
-    dispatch(requestDocument())
-    return fetch(`${DRAWER_API_URL}/api/documents/${documentId}`, authHeaders())
-    .then(checkStatus)
-    .then((response) => response.json())
-    .then((json) => dispatch(receiveDocument(json.data)))
+export const loadDocument = (documentId) => {
+  return (dispatch, getState) => {
+    // bail out early if we have the document
+    let docs = getState().documents.items
+    if (docs.filter((doc) => doc.id === documentId).length) {
+      return null
+    }
+
+    dispatch(fetchDocument(documentId))
   }
 }
 
-// TODO use some sort of api middleware
+const postDocument = (filename, s3Key, mimeType, fileSize) => {
+  return {
+    [CALL_API]: {
+      types: [ CREATE_DOCUMENT_REQUEST, CREATE_DOCUMENT_SUCCESS, CREATE_DOCUMENT_FAILURE ],
+      endpoint: 'documents',
+      method: 'POST',
+      data: {
+        document: {
+          filename,
+          s3Key,
+          mimeType,
+          fileSize
+        }
+      }
+    }
+  }
+}
+
 export const createDocument = (filename, s3Key, mimeType, fileSize) => {
   return (dispatch) => {
-    dispatch(requestCreateDocument(filename, s3Key, mimeType, fileSize))
-    return fetch(`${DRAWER_API_URL}/api/documents`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': localStorage.getItem('jwt'),
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          document: {
-            filename: filename,
-            s3_key: s3Key,
-            mimeType: mimeType,
-            fileSize: fileSize
-          }
-        })
-      })
-      .then(checkStatus)
-      .then((response) => response.json())
-      .then((json) => dispatch(createDocumentSuccess(json.data)))
+    dispatch(postDocument(filename, s3Key, mimeType, fileSize))
   }
 }
 
@@ -136,17 +84,12 @@ export const createDocument = (filename, s3Key, mimeType, fileSize) => {
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
-  [REQUEST_DOCUMENTS]: (state) => {
+  [DOCUMENTS_REQUEST]: (state) => {
     return Object.assign({}, state, {
       isFetching: true
     })
   },
-  [REQUEST_DOCUMENT]: (state) => {
-    return Object.assign({}, state, {
-      isFetchingDocument: true
-    })
-  },
-  [RECEIVE_DOCUMENTS]: (state, { response }) => {
+  [DOCUMENTS_SUCCESS]: (state, { response }) => {
     return Object.assign({}, state, {
       isFetching: false,
       items: response.data
@@ -154,24 +97,36 @@ const ACTION_HANDLERS = {
   },
   [DOCUMENTS_FAILURE]: (state) => {
     console.log(DOCUMENTS_FAILURE)
-    return state
+    return Object.assign({}, state, {
+      isFetching: false
+    })
   },
-  [RECEIVE_DOCUMENT]: (state, { document }) => {
-    // TODO: make this replace the document if it
-    //       already exists in items
+  [DOCUMENT_REQUEST]: (state) => {
+    return Object.assign({}, state, {
+      isFetchingDocument: true
+    })
+  },
+  [DOCUMENT_SUCCESS]: (state, { response }) => {
+    console.log(response.data)
     return Object.assign({}, state, {
       isFetchingDocument: false,
       items: [
-        document,
+        response.data,
         ...state.items
       ]
     })
   },
-  [CREATE_DOCUMENT_SUCCESS]: (state, { document }) => {
+  [DOCUMENT_FAILURE]: (state) => {
+    console.log(DOCUMENT_FAILURE)
+    return Object.assign({}, state, {
+      isFetchingDocument: false
+    })
+  },
+  [CREATE_DOCUMENT_SUCCESS]: (state, { response }) => {
     return Object.assign({}, state, {
       isFetching: false,
       items: [
-        document,
+        response.data,
         ...state.items
       ]
     })
