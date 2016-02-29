@@ -25,12 +25,16 @@ export class HomeView extends React.Component {
   }
 
   componentDidMount () {
+    // if the jwt param is present, sign in and strip
+    // it from the url.
     let jwt = new Uri(location.search).getQueryParamValue('jwt')
     if (jwt) {
       this.props.signInWithJWT(jwt)
       history.replaceState({}, null, '/')
     }
 
+    // seems like user.loggedIn isn't set immediately if
+    // just signed in via jwt.
     if (jwt || this.props.user.loggedIn) {
       this.props.loadDocuments()
     }
@@ -46,7 +50,7 @@ export class HomeView extends React.Component {
         <ul className='list-group'>
           {documents.items.map((doc) =>
             <li key={doc.id} className='list-group-item'>
-              <Link to={`/document/${doc.id}`}>View in app</Link>
+              <Link to={`/document/${doc.id}`}>View</Link>
               <Document doc={doc} />
             </li>
           )}
@@ -60,11 +64,9 @@ export class HomeView extends React.Component {
 
     return (
       <div className='container'>
-        <div>
-          {!user.loggedIn && (
-            <div>A place to upload your files</div>
-          )}
-        </div>
+        {!user.loggedIn && (
+          <div>A place to upload your files</div>
+        )}
 
         {user.loggedIn && this.loggedInRender()}
       </div>

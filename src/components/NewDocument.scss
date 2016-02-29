@@ -1,0 +1,36 @@
+
+.new-document-container {
+}
+
+.dropzone {
+  width: 100%;
+  border: 3px solid #333 dashed;
+  border-radius: 4px;
+  padding: 80px;
+
+  p {
+    text-align: center;
+    margin-bottom: 0;
+  }
+}
+
+.dropzone-active {
+  border-color: #aaa;
+  p {
+    color: #aaa;
+  }
+}
+
+.progress-container {
+  position: relative;
+  margin-top: 1em;
+  background: #eee;
+  height: 3em;
+
+}
+.progress-icon {
+  position: absolute;
+  float: left;
+  transform: rotateY(180deg);
+  font-size: 3.5em;
+}

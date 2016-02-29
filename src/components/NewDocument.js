@@ -5,11 +5,16 @@ import request from 'superagent'
 import unorm from 'unorm'
 import latinize from 'latinize'
 import { createDocument } from 'redux/modules/documents'
+import classes from './NewDocument.scss'
+
+// TODO
+// Consider doing all the uploads, thru redux
 
 class NewDocument extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
+      inProgress: false,
       progress: null
     }
   }
@@ -42,13 +47,13 @@ class NewDocument extends React.Component {
       .set('Accept', 'XML')
       .on('progress', (e) => {
         // TODO handle multiple uploads
-        this.setState({ progress: e.percent })
+        this.setState({ inProgress: true, progress: e.percent })
       })
       .end((err, res) => {
         if (err) {
           console.log(err.stack)
         }
-        this.setState({ progress: null })
+        this.setState({ inProgress: false, progress: null })
 
         this.setState
 
@@ -64,7 +69,7 @@ class NewDocument extends React.Component {
 
   onDrop = (files) => {
     files.forEach((file) => {
-      fetch('http://localhost:3000/api/upload_keys',
+      fetch(`${DRAWER_API_URL}/api/upload_keys`,
         {
           method: 'POST',
           headers: { 'Authorization': localStorage.getItem('jwt') }
@@ -74,26 +79,29 @@ class NewDocument extends React.Component {
     })
   }
 
-  onOpenClick = () => {
-    this.refs.dropzone.open()
-  }
-
   render () {
-    if (this.state.progress) {
-      return (
-        <div>
-          {this.state.progress}
-        </div>
-      )
-    }
+    const { progress, inProgress } = this.state
 
     return (
-      <div>
-        <Dropzone ref='dropzone' onDrop={this.onDrop} />
+      <div className={classes['new-document-container']}>
+        <Dropzone ref='dropzone'
+          onDrop={this.onDrop}
+          className={classes.dropzone}
+          activeClassName={classes['dropzone-active']}>
+
+          <p>
+            Try dropping some files here, or click to select files to upload.
+          </p>
+          {inProgress && (
+            <div className={classes['progress-container']}>
+              <div className={classes['progress-icon']} style={{ left: `${progress}%` }}>
+                🏇
+              </div>
+            </div>
+          )}
+
+        </Dropzone>
         <br />
-        <button type='button' onClick={this.onOpenClick} className='btn btn-default'>
-          Select files
-        </button>
       </div>
     )
   }
