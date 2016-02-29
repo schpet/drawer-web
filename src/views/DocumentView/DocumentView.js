@@ -19,7 +19,7 @@ class DocumentView extends React.Component {
 
   render () {
     // const { document } = this.props
-    const { document }  = this.props
+    const { document } = this.props
 
     if (document) {
       return (

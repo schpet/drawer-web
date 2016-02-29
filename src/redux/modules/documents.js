@@ -1,9 +1,5 @@
 import fetch from 'isomorphic-fetch'
 
-/* @flow */
-// ------------------------------------
-// Constants
-// ------------------------------------
 export const REQUEST_DOCUMENTS = 'REQUEST_DOCUMENTS'
 export const RECEIVE_DOCUMENTS = 'RECEIVE_DOCUMENTS'
 export const REQUEST_DOCUMENT = 'REQUEST_DOCUMENT'
@@ -11,7 +7,7 @@ export const RECEIVE_DOCUMENT = 'RECEIVE_DOCUMENT'
 export const REQUEST_CREATE_DOCUMENT = 'REQUEST_CREATE_DOCUMENT'
 export const CREATE_DOCUMENT_SUCCESS = 'CREATE_DOCUMENT_SUCCESS'
 
-export const requestDocuments = () : Action => ({
+export const requestDocuments = () => ({
   type: REQUEST_DOCUMENTS
 })
 
@@ -44,6 +40,7 @@ export const createDocumentSuccess = (json) => ({
   document: json
 })
 
+// TODO is this right? is this used?
 export const actions = {
   fetchDocuments,
   createDocument
@@ -59,12 +56,21 @@ function checkStatus (response) {
   }
 }
 
+const authHeaders = () => {
+  const jwtToken = localStorage.getItem('jwt')
+  if (jwtToken) {
+    return {
+      headers: { 'Authorization': localStorage.getItem('jwt') }
+    }
+  } else {
+    return { headers: {} }
+  }
+}
+
 export const fetchDocuments = () => {
   return (dispatch) => {
     dispatch(requestDocuments())
-    return fetch('http://localhost:3000/api/documents', {
-      headers: { 'Authorization': localStorage.getItem('jwt') }
-    })
+    return fetch('http://localhost:3000/api/documents', authHeaders())
     .then(checkStatus)
     .then((response) => response.json())
     .then((json) => dispatch(receiveDocuments(json.data)))
@@ -75,9 +81,7 @@ export const fetchDocument = (documentId) => {
   // TODO check if it's already loaded?
   return (dispatch) => {
     dispatch(requestDocument())
-    return fetch(`http://localhost:3000/api/documents/${documentId}`, {
-      headers: { 'Authorization': localStorage.getItem('jwt') }
-    })
+    return fetch(`http://localhost:3000/api/documents/${documentId}`, authHeaders())
     .then(checkStatus)
     .then((response) => response.json())
     .then((json) => dispatch(receiveDocument(json.data)))

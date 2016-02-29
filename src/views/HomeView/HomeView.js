@@ -25,22 +25,22 @@ export class HomeView extends React.Component {
   }
 
   componentDidMount () {
-    this.props.fetchDocuments()
-
     let jwt = new Uri(location.search).getQueryParamValue('jwt')
     if (jwt) {
       localStorage.setItem('jwt', jwt)
     }
 
-    if (!this.props.user.loggedIn) {
+    // TODO better auth! not in this component.
+    if (localStorage.getItem('jwt')) {
       this.props.fetchUser()
+      this.props.fetchDocuments()
     }
   }
 
-  render () {
+  loggedInRender = () => {
     const { documents } = this.props
     return (
-      <div className='container'>
+      <div>
         <h3>Upload a new document:</h3>
         <NewDocument />
         <hr />
@@ -52,6 +52,23 @@ export class HomeView extends React.Component {
             </li>
           )}
         </ul>
+      </div>
+    )
+  }
+
+  render () {
+    const { user } = this.props
+
+    return (
+      <div className='container'>
+        <div>
+          <h1>Drawer</h1>
+          {!user.loggedIn && (
+            <div>Authenticate with github to upload documents</div>
+          )}
+        </div>
+
+        {user.loggedIn && this.loggedInRender()}
       </div>
     )
   }
