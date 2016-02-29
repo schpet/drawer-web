@@ -23,14 +23,23 @@ class Menu extends React.Component {
     return (
       <div id='menu' className='navbar navbar-static-top navbar-inverse'>
         <div className='container'>
+          <Link to='/' className='navbar-brand'>
+            Drawer
+          </Link>
+
           <ul className='nav navbar-nav'>
-            <li><Link to='/'>Home</Link></li>
             <li><Link to='/about'>About</Link></li>
           </ul>
 
           <ul className='nav navbar-nav navbar-right'>
             {loggedIn && (
-              <li><a onClick={signOutAndClearJWT}>Logout</a></li>
+              <li>
+                <button type='button'
+                  className='btn btn-link navbar-btn'
+                  onClick={signOutAndClearJWT}>
+                  Logout
+                </button>
+              </li>
             )}
             {!loggedIn && (
               <li><a href={signInUrl}>Sign in with Github</a></li>

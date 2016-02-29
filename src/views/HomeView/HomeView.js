@@ -61,7 +61,6 @@ export class HomeView extends React.Component {
     return (
       <div className='container'>
         <div>
-          <h1>Drawer</h1>
           {!user.loggedIn && (
             <div>A place to upload your files</div>
           )}
