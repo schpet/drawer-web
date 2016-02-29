@@ -2,25 +2,18 @@ import React, { PropTypes } from 'react'
 // import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import { connect } from 'react-redux'
+import { signOutAndClearJWT } from 'redux/modules/user'
 
 class Menu extends React.Component {
   static propTypes = {
-    user: PropTypes.object.isRequired
+    user: PropTypes.object.isRequired,
+    signOutAndClearJWT: PropTypes.func.isRequired
   }
 
   render () {
     const { handle, loggedIn } = this.props.user
-    let loginButton
-
-    if (loggedIn) {
-      loginButton = <a href='javascript:alert("todo")'>Logout</a>
-    } else {
-      loginButton = (
-        <a href='http://localhost:3000/request_token'>
-          Sign in with Github
-        </a>
-      )
-    }
+    const { signOutAndClearJWT } = this.props
+    const signInUrl = `${DRAWER_API_URL}/request_token`
 
     return (
       <div id='menu' className='navbar navbar-static-top navbar-inverse'>
@@ -28,14 +21,23 @@ class Menu extends React.Component {
           <ul className='nav navbar-nav'>
             <li><Link to='/'>Home</Link></li>
             <li><Link to='/about'>About</Link></li>
-            <li>{loginButton}</li>
-
           </ul>
-          {loggedIn && (
-            <p className='navbar-text pull-right'>
-              Signed in as {handle}
-            </p>
-          )}
+
+          <ul className='nav navbar-nav navbar-right'>
+            {loggedIn && (
+              <li><a onClick={signOutAndClearJWT}>Logout</a></li>
+            )}
+            {!loggedIn && (
+              <li><a href={signInUrl}>Sign in with Github</a></li>
+            )}
+            {handle && (
+              <li>
+                <p className='navbar-text'>
+                  Signed in as {handle}
+                </p>
+              </li>
+            )}
+          </ul>
         </div>
       </div>
     )
@@ -48,4 +50,6 @@ const mapStateToProps = (state, ownProps) => {
   })
 }
 
-export default connect(mapStateToProps, null)(Menu)
+export default connect(mapStateToProps, {
+  signOutAndClearJWT
+})(Menu)

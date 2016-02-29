@@ -1,5 +1,9 @@
 import { CALL_API } from 'middleware/api'
 
+// ------------------------------------
+// Constants
+// ------------------------------------
+
 export const DOCUMENTS_REQUEST = 'DOCUMENTS_REQUEST'
 export const DOCUMENTS_SUCCESS = 'DOCUMENTS_SUCCESS'
 export const DOCUMENTS_FAILURE = 'DOCUMENTS_FAILURE'
@@ -17,6 +21,10 @@ export const CREATE_DOCUMENT_FAILURE = 'CREATE_DOCUMENT_FAILURE'
 //   loadDocuments,
 //   createDocument
 // }
+
+// ------------------------------------
+// Actions
+// ------------------------------------
 
 const fetchDocuments = () => {
   return {

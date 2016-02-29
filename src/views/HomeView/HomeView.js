@@ -1,8 +1,8 @@
 /* @flow */
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { loadDocuments } from '../../redux/modules/documents'
-import { loadUser } from '../../redux/modules/user'
+import { loadDocuments } from 'redux/modules/documents'
+import { loadUser, signInWithJWT } from 'redux/modules/user'
 // import DuckImage from './Duck.jpg'
 // import classes from './HomeView.scss'
 import Document from 'components/Document'
@@ -21,20 +21,20 @@ export class HomeView extends React.Component {
     documents: PropTypes.object.isRequired,
     loadDocuments: PropTypes.func.isRequired,
     loadUser: PropTypes.func.isRequired,
+    signInWithJWT: PropTypes.func.isRequired,
     user: PropTypes.object.isRequired
   }
 
   componentDidMount () {
     let jwt = new Uri(location.search).getQueryParamValue('jwt')
     if (jwt) {
-      // TODO do this in redux!
-      localStorage.setItem('jwt', jwt)
+      this.props.signInWithJWT(jwt)
       history.replaceState({}, null, '/')
     }
 
-    if (localStorage.getItem('jwt')) {
-      this.props.loadUser()
-      this.props.loadDocuments()
+    if (this.props.user.loggedIn) {
+      this.props.loadUser() // TODO should happen above this, on any action
+      this.props.loadDocuments() // should be based on logged in state
     }
   }
 
@@ -85,5 +85,6 @@ const mapStateToProps = (state, ownProps) => {
 
 export default connect((mapStateToProps), {
   loadDocuments,
-  loadUser
+  loadUser,
+  signInWithJWT
 })(HomeView)
