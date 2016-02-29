@@ -13,19 +13,26 @@ class Menu extends React.Component {
     let loginButton
 
     if (loggedIn) {
-      loginButton = <span>TODO: logout</span>
+      loginButton = <a href='javascript:alert("todo")'>Logout</a>
     } else {
       loginButton = <a href='http://localhost:3000/request_token'>Login</a>
     }
 
     return (
-      <div id='menu'>
-        <ul>
-          <li><Link to='/'>Home</Link></li>
-          <li><Link to='/about'>About</Link></li>
-          <li>{loginButton}</li>
-          <li>{handle}</li>
-        </ul>
+      <div id='menu' className='navbar navbar-static-top navbar-inverse'>
+        <div className='container'>
+          <ul className='nav navbar-nav'>
+            <li><Link to='/'>Home</Link></li>
+            <li><Link to='/about'>About</Link></li>
+            <li>{loginButton}</li>
+
+          </ul>
+          {loggedIn && (
+            <p className='navbar-text pull-right'>
+              Signed in as {handle}
+            </p>
+          )}
+        </div>
       </div>
     )
   }

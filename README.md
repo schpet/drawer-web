@@ -19,4 +19,5 @@ based off a [react redux starter kit][kit].
 - figure out middleware and use it for api requests
 - in general, use redux everywhere possible
 - public viewable file
+- render on the server ("isomorphic") for opengraph tags, faster rendering
 - bonus: let users convert videos to gifs

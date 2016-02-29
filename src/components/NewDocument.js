@@ -90,8 +90,9 @@ class NewDocument extends React.Component {
     return (
       <div>
         <Dropzone ref='dropzone' onDrop={this.onDrop} />
-        <button type='button' onClick={this.onOpenClick}>
-          Open Dropzone
+        <br />
+        <button type='button' onClick={this.onOpenClick} className='btn btn-default'>
+          Select files
         </button>
       </div>
     )
