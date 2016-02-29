@@ -27,6 +27,7 @@ export const signInWithJWT = (jwt) => {
   return (dispatch) => {
     localStorage.setItem('jwt', jwt)
     dispatch(signIn())
+    dispatch(fetchUser())
   }
 }
 
@@ -85,7 +86,9 @@ const ACTION_HANDLERS = {
   },
   [SIGN_OUT]: (state) => {
     return Object.assign({}, state, {
-      loggedIn: false
+      loggedIn: false,
+      id: null,
+      handle: null
     })
   }
 }

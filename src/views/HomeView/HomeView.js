@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { loadDocuments } from 'redux/modules/documents'
-import { loadUser, signInWithJWT } from 'redux/modules/user'
+import { signInWithJWT } from 'redux/modules/user'
 // import DuckImage from './Duck.jpg'
 // import classes from './HomeView.scss'
 import Document from 'components/Document'
@@ -20,7 +20,6 @@ export class HomeView extends React.Component {
   static propTypes = {
     documents: PropTypes.object.isRequired,
     loadDocuments: PropTypes.func.isRequired,
-    loadUser: PropTypes.func.isRequired,
     signInWithJWT: PropTypes.func.isRequired,
     user: PropTypes.object.isRequired
   }
@@ -32,9 +31,8 @@ export class HomeView extends React.Component {
       history.replaceState({}, null, '/')
     }
 
-    if (this.props.user.loggedIn) {
-      this.props.loadUser() // TODO should happen above this, on any action
-      this.props.loadDocuments() // should be based on logged in state
+    if (jwt || this.props.user.loggedIn) {
+      this.props.loadDocuments()
     }
   }
 
@@ -85,6 +83,5 @@ const mapStateToProps = (state, ownProps) => {
 
 export default connect((mapStateToProps), {
   loadDocuments,
-  loadUser,
   signInWithJWT
 })(HomeView)

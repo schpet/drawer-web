@@ -2,12 +2,17 @@ import React, { PropTypes } from 'react'
 // import { connect } from 'react-redux'
 import { Link } from 'react-router'
 import { connect } from 'react-redux'
-import { signOutAndClearJWT } from 'redux/modules/user'
+import { loadUser, signOutAndClearJWT } from 'redux/modules/user'
 
 class Menu extends React.Component {
   static propTypes = {
     user: PropTypes.object.isRequired,
-    signOutAndClearJWT: PropTypes.func.isRequired
+    signOutAndClearJWT: PropTypes.func.isRequired,
+    loadUser: PropTypes.func.isRequired
+  }
+
+  componentDidMount () {
+    this.props.loadUser()
   }
 
   render () {
@@ -51,5 +56,6 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 export default connect(mapStateToProps, {
-  signOutAndClearJWT
+  signOutAndClearJWT,
+  loadUser
 })(Menu)
