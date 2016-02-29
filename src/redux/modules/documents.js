@@ -1,4 +1,3 @@
-import 'isomorphic-fetch'
 import { CALL_API } from 'middleware/api'
 
 export const DOCUMENTS_REQUEST = 'DOCUMENTS_REQUEST'
@@ -59,7 +58,8 @@ export const loadDocument = (documentId) => {
 const postDocument = (filename, s3Key, mimeType, fileSize) => {
   return {
     [CALL_API]: {
-      types: [ CREATE_DOCUMENT_REQUEST, CREATE_DOCUMENT_SUCCESS, CREATE_DOCUMENT_FAILURE ],
+      types: [ CREATE_DOCUMENT_REQUEST, CREATE_DOCUMENT_SUCCESS,
+               CREATE_DOCUMENT_FAILURE ],
       endpoint: 'documents',
       method: 'POST',
       data: {

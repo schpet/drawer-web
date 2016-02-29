@@ -2,7 +2,7 @@
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { loadDocuments } from '../../redux/modules/documents'
-import { fetchUser } from '../../redux/modules/user'
+import { loadUser } from '../../redux/modules/user'
 // import DuckImage from './Duck.jpg'
 // import classes from './HomeView.scss'
 import Document from 'components/Document'
@@ -20,19 +20,20 @@ export class HomeView extends React.Component {
   static propTypes = {
     documents: PropTypes.object.isRequired,
     loadDocuments: PropTypes.func.isRequired,
-    fetchUser: PropTypes.func.isRequired,
+    loadUser: PropTypes.func.isRequired,
     user: PropTypes.object.isRequired
   }
 
   componentDidMount () {
     let jwt = new Uri(location.search).getQueryParamValue('jwt')
     if (jwt) {
+      // TODO do this in redux!
       localStorage.setItem('jwt', jwt)
+      history.replaceState({}, null, '/')
     }
 
-    // TODO better auth! not in this component.
     if (localStorage.getItem('jwt')) {
-      this.props.fetchUser()
+      this.props.loadUser()
       this.props.loadDocuments()
     }
   }
@@ -84,5 +85,5 @@ const mapStateToProps = (state, ownProps) => {
 
 export default connect((mapStateToProps), {
   loadDocuments,
-  fetchUser
+  loadUser
 })(HomeView)

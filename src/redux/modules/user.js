@@ -1,45 +1,46 @@
-export const REQUEST_USER = 'REQUEST_USER'
-export const RECEIVE_USER = 'RECEIVE_USER'
+import { CALL_API } from 'middleware/api'
 
-export const requestUser = () => ({
-  type: REQUEST_USER
-})
+export const USER_REQUEST = 'USER_REQUEST'
+export const USER_SUCCESS = 'USER_SUCCESS'
+export const USER_FAILURE = 'USER_FAILURE'
 
-export const receiveUser = (json) => ({
-  type: RECEIVE_USER,
-  user: json
-})
+const fetchUser = () => {
+  return {
+    [CALL_API]: {
+      types: [ USER_REQUEST, USER_SUCCESS, USER_FAILURE ],
+      endpoint: 'user'
+    }
+  }
+}
 
-export const actions = {
-  requestUser,
-  receiveUser
+export const loadUser = () => {
+  return (dispatch, getState) => {
+    if (getState().user.loggedIn) {
+      return null
+    }
+    dispatch(fetchUser())
+  }
 }
 
 const ACTION_HANDLERS = {
-  [REQUEST_USER]: (state, { payload }) => {
+  [USER_REQUEST]: (state) => {
     return Object.assign({}, state, {
       isFetching: true
     })
   },
-  [RECEIVE_USER]: (state, { user }) => {
+  [USER_SUCCESS]: (state, { response }) => {
     return Object.assign({}, state, {
       loggedIn: true,
       isFetching: false,
-      id: user.id,
-      handle: user.handle
+      id: response.data.id,
+      handle: response.data.attributes.handle
     })
-  }
-}
-
-export const fetchUser = () => {
-  return (dispatch) => {
-    dispatch(requestUser())
-    return fetch('http://localhost:3000/api/user',
-      {
-        headers: { 'Authorization': localStorage.getItem('jwt') }
-      })
-      .then((response) => response.json())
-      .then((json) => dispatch(receiveUser(json)))
+  },
+  [USER_FAILURE]: (state) => {
+    return Object.assign({}, state, {
+      isFetching: false,
+      loggedIn: false
+    })
   }
 }
 
