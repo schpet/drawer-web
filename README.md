@@ -10,11 +10,13 @@ based off a [react redux starter kit][kit].
 main:
 
 1. refactor stuff to use api middleware
-2. deploy this thing
+2. fix auth stuff (logout, etc)
+3. deploy this thing
 
 other:
 
 - instructions to boot/test the app
+- animate a 🏇emoji to show progress
 - tests
 - styles
 - pull auth stuff out of homeview, moving it somewhere more
@@ -22,6 +24,7 @@ other:
 - title / description for docs
 - different env stuff for deploy (instead of hardcoded junk)
 - get jwt token out of URL (improve auth flow)
+- tags (via react dnd)
 - sign out
 - in general, use redux everywhere possible
 - public viewable file

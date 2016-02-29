@@ -70,7 +70,7 @@ const authHeaders = () => {
 export const fetchDocuments = () => {
   return (dispatch) => {
     dispatch(requestDocuments())
-    return fetch('http://localhost:3000/api/documents', authHeaders())
+    return fetch(`${DRAWER_API_URL}/api/documents`, authHeaders())
     .then(checkStatus)
     .then((response) => response.json())
     .then((json) => dispatch(receiveDocuments(json.data)))
@@ -81,7 +81,7 @@ export const fetchDocument = (documentId) => {
   // TODO check if it's already loaded?
   return (dispatch) => {
     dispatch(requestDocument())
-    return fetch(`http://localhost:3000/api/documents/${documentId}`, authHeaders())
+    return fetch(`${DRAWER_API_URL}/api/documents/${documentId}`, authHeaders())
     .then(checkStatus)
     .then((response) => response.json())
     .then((json) => dispatch(receiveDocument(json.data)))
@@ -92,7 +92,7 @@ export const fetchDocument = (documentId) => {
 export const createDocument = (filename, s3Key, mimeType, fileSize) => {
   return (dispatch) => {
     dispatch(requestCreateDocument(filename, s3Key, mimeType, fileSize))
-    return fetch('http://localhost:3000/api/documents',
+    return fetch(`${DRAWER_API_URL}/api/documents`,
       {
         method: 'POST',
         headers: {

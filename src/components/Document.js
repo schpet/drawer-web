@@ -14,8 +14,8 @@ class Document extends React.Component {
 
     return (
       <div className='clearfix'>
-        <a href={url} className='btn btn-primary pull-right'>
-        View Raw
+        <a href={url} className='btn btn-primary'>
+          Download
         </a>
         <div>
           {filename} ({formattedFileSize})

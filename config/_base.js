@@ -78,7 +78,8 @@ config.globals = {
   '__TEST__'     : config.env === 'test',
   '__DEBUG__'    : config.env === 'development' && !argv.no_debug,
   '__DEBUG_NEW_WINDOW__' : !!argv.nw,
-  '__BASENAME__' : JSON.stringify(process.env.BASENAME || '')
+  '__BASENAME__' : JSON.stringify(process.env.BASENAME || ''),
+  'DRAWER_API_URL': JSON.stringify(process.env.DRAWER_API_URL || 'http://localhost:3000')
 }
 
 // ------------------------------------
