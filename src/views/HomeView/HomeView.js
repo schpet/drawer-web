@@ -1,7 +1,7 @@
 /* @flow */
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { fetchDocuments } from '../../redux/modules/documents'
+import { loadDocuments } from '../../redux/modules/documents'
 import { fetchUser } from '../../redux/modules/user'
 // import DuckImage from './Duck.jpg'
 // import classes from './HomeView.scss'
@@ -19,7 +19,7 @@ import { Link } from 'react-router'
 export class HomeView extends React.Component {
   static propTypes = {
     documents: PropTypes.object.isRequired,
-    fetchDocuments: PropTypes.func.isRequired,
+    loadDocuments: PropTypes.func.isRequired,
     fetchUser: PropTypes.func.isRequired,
     user: PropTypes.object.isRequired
   }
@@ -33,7 +33,7 @@ export class HomeView extends React.Component {
     // TODO better auth! not in this component.
     if (localStorage.getItem('jwt')) {
       this.props.fetchUser()
-      this.props.fetchDocuments()
+      this.props.loadDocuments()
     }
   }
 
@@ -83,6 +83,6 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 export default connect((mapStateToProps), {
-  fetchDocuments,
+  loadDocuments,
   fetchUser
 })(HomeView)

@@ -1,7 +1,9 @@
 import fetch from 'isomorphic-fetch'
+import { CALL_API } from 'middleware/api'
 
 export const REQUEST_DOCUMENTS = 'REQUEST_DOCUMENTS'
 export const RECEIVE_DOCUMENTS = 'RECEIVE_DOCUMENTS'
+export const DOCUMENTS_FAILURE = 'DOCUMENTS_FAILURE'
 export const REQUEST_DOCUMENT = 'REQUEST_DOCUMENT'
 export const RECEIVE_DOCUMENT = 'RECEIVE_DOCUMENT'
 export const REQUEST_CREATE_DOCUMENT = 'REQUEST_CREATE_DOCUMENT'
@@ -42,7 +44,7 @@ export const createDocumentSuccess = (json) => ({
 
 // TODO is this right? is this used?
 export const actions = {
-  fetchDocuments,
+  loadDocuments,
   createDocument
 }
 
@@ -67,13 +69,28 @@ const authHeaders = () => {
   }
 }
 
-export const fetchDocuments = () => {
+export const fetchDocumentsOld = () => {
   return (dispatch) => {
     dispatch(requestDocuments())
     return fetch(`${DRAWER_API_URL}/api/documents`, authHeaders())
     .then(checkStatus)
     .then((response) => response.json())
     .then((json) => dispatch(receiveDocuments(json.data)))
+  }
+}
+
+export const fetchDocuments = () => {
+  return {
+    [CALL_API]: {
+      types: [ REQUEST_DOCUMENTS, RECEIVE_DOCUMENTS, DOCUMENTS_FAILURE ],
+      endpoint: 'documents'
+    }
+  }
+}
+
+export const loadDocuments = () => {
+  return (dispatch) => {
+    dispatch(fetchDocuments())
   }
 }
 
@@ -104,8 +121,8 @@ export const createDocument = (filename, s3Key, mimeType, fileSize) => {
           document: {
             filename: filename,
             s3_key: s3Key,
-            mime_type: mimeType,
-            file_size: fileSize
+            mimeType: mimeType,
+            fileSize: fileSize
           }
         })
       })
@@ -129,11 +146,15 @@ const ACTION_HANDLERS = {
       isFetchingDocument: true
     })
   },
-  [RECEIVE_DOCUMENTS]: (state, { documents }) => {
+  [RECEIVE_DOCUMENTS]: (state, { response }) => {
     return Object.assign({}, state, {
       isFetching: false,
-      items: documents
+      items: response.data
     })
+  },
+  [DOCUMENTS_FAILURE]: (state) => {
+    console.log(DOCUMENTS_FAILURE)
+    return state
   },
   [RECEIVE_DOCUMENT]: (state, { document }) => {
     // TODO: make this replace the document if it

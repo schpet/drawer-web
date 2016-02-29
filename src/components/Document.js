@@ -8,9 +8,9 @@ class Document extends React.Component {
 
   render () {
     const { attributes } = this.props.doc
-    const { file_size, url, filename } = attributes
+    const { fileSize, url, filename } = attributes
 
-    const formattedFileSize = bytes(file_size)
+    const formattedFileSize = bytes(fileSize)
 
     return (
       <div className='clearfix'>
@@ -26,15 +26,15 @@ class Document extends React.Component {
   }
 
   renderPreview = () => {
-    const { filename, mime_type, url, file_size } = this.props.doc.attributes
+    const { filename, mimeType, url, fileSize } = this.props.doc.attributes
 
-    switch (mime_type) {
+    switch (mimeType) {
       case 'image/jpeg':
       case 'image/png':
       case 'image/gif':
       case 'image/svg+xml':
 
-        if (file_size > maxImagePreviewFileSize) {
+        if (fileSize > maxImagePreviewFileSize) {
           return (
             <div>
               no preview for images larger than {bytes(maxImagePreviewFileSize)}
@@ -53,7 +53,7 @@ class Document extends React.Component {
       default:
         return (
           <div>
-            (no preview for {mime_type})
+            (no preview for {mimeType})
           </div>
         )
     }
