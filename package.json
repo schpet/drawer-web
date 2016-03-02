@@ -11,6 +11,7 @@
   "scripts": {
     "clean": "rimraf dist",
     "compile": "better-npm-run compile",
+    "postinstall": "better-npm-run compile",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "start": "better-npm-run start",
